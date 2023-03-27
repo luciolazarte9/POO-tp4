@@ -4,95 +4,139 @@ class Contacto {
     this.telefono = telefono;
   }
 
-  equals(contacto) {
-    return this.nombre === contacto.nombre && this.telefono === contacto.telefono;
+  esIgual(contacto) {
+    return this.nombre === contacto.nombre;
   }
 }
 
-class Agenda{
-  constructor(tamano = 10) {
+class Agenda {
+  constructor(tamaño = 10) {
+    this.tamaño = tamaño;
     this.contactos = [];
-    this.tamano = tamano;
   }
 
   añadirContacto(contacto) {
-    if (this.agendaLlena()) return console.log("Agenda llena, no se puede añadir el contacto.");
-    if (this.existeContacto(contacto)) return console.log("Ya existe un contacto con ese nombre.");
+    if (this.agendaLlena()) {
+      console.log('La agenda esta llena. No se puede agregar mas contactos.');
+      return;
+    }
+
+    if (this.existeContacto(contacto)) {
+      console.log(`El contacto ${contacto.nombre} ya existe en la agenda.`);
+      return;
+    }
+
     this.contactos.push(contacto);
-    console.log("Contacto añadido correctamente.");
+    console.log(`Se ha agregado el contacto ${contacto.nombre} a la agenda.`);
   }
 
   existeContacto(contacto) {
-    return this.contactos.findIndex(c => c.nombre === contacto.nombre) !== -1;
+    return this.contactos.some((c) => c.esIgual(contacto));
   }
-  
 
   listarContactos() {
-    if (!this.contactos.length) return console.log("Agenda vacía.");
-    console.log("Lista de contactos:");
-    this.contactos.forEach(c => console.log(`- ${c.nombre}: ${c.telefono}`));
+    if (this.contactos.length === 0) {
+      console.log('La agenda esta vacia.');
+      return;
+    }
+
+    console.log('Lista de contactos:');
+    this.contactos.forEach((contacto) => {
+      console.log(`- ${contacto.nombre}: ${contacto.telefono}`);
+    });
   }
 
   buscarContacto(nombre) {
-    const contacto = this.contactos.find(c => c.nombre === nombre);
-    if (contacto) console.log(`Teléfono de ${nombre}: ${contacto.telefono}`);
-    else console.log(`No existe ningún contacto con el nombre ${nombre}.`);
+    const contacto = this.contactos.find((c) => c.nombre === nombre);
+
+    if (contacto) {
+      console.log(`El telefono de ${contacto.nombre} es ${contacto.telefono}.`);
+    } else {
+      console.log(`No se encontro un contacto con el nombre ${nombre}.`);
+    }
   }
 
   eliminarContacto(contacto) {
-    const index = this.contactos.findIndex(c => c.equals(contacto));
-    if (index === -1) return console.log("No se ha encontrado el contacto en la agenda.");
-    this.contactos.splice(index, 1);
-    console.log("Contacto eliminado correctamente.");
+    const index = this.contactos.findIndex((c) => c.esIgual(contacto));
+
+    if (index !== -1) {
+      this.contactos.splice(index, 1);
+      console.log(`Se ha eliminado el contacto ${contacto.nombre} de la agenda.`);
+    } else {
+      console.log(`El contacto ${contacto.nombre} no existe en la agenda.`);
+    }
   }
 
   agendaLlena() {
-    return this.contactos.length === this.tamano;
+    return this.contactos.length === this.tamaño;
   }
 
   huecosLibres() {
-    console.log(`Hay ${this.tamano - this.contactos.length} huecos libres.`);
+    const huecos = this.tamaño - this.contactos.length;
+    console.log(`La agenda tiene ${huecos} huecos libres.`);
   }
 }
+
+const miAgenda = new Agenda(10);
+
 
 function mostrarMenu() {
-  const agenda = new Agenda(); // Se crea una instancia de la clase Agenda
-  const opcion = prompt("Selecciona una opción: 1. Añadir contacto 2. Buscar contacto 3. Eliminar contacto 4. Listar contactos 5. Huecos libres 0. Salir");
-  switch (opcion) {
-    case "1":
-      const nombre = prompt("Nombre del contacto: ");
-      const telefono = prompt("Teléfono del contacto: ");
-      const contacto = new Contacto(nombre, telefono);
-      agenda.añadirContacto(contacto);
-      mostrarMenu();
-      break;
-    case "2":
-      const nombreBuscar = prompt("Nombre del contacto a buscar: ");
-      agenda.buscarContacto(nombreBuscar);
-      mostrarMenu();
-      break;
-    case "3":
-      const nombreEliminar = prompt("Nombre del contacto a eliminar: ");
-      const contactoEliminar = new Contacto(nombreEliminar, "");
-      agenda.eliminarContacto(contactoEliminar);
-      mostrarMenu();
-      break;
-    case "4":
-      agenda.listarContactos();
-      mostrarMenu();
-      break;
-    case "5":
-      agenda.huecosLibres();
-      mostrarMenu();
-      break;
-    case "0":
-      console.log("Saliendo de la aplicación...");
-      break;
-    default:
-      console.log("Opción no válida, por favor seleccione una opción válida.");
-      mostrarMenu();
-      break;
-  }
+return prompt(
+  `Selecciona una opcion:
+1. Añadir un contacto
+2. Buscar un contacto
+3. Eliminar un contacto
+4. Mostrar la lista de contactos
+5. Mostrar la cantidad de huecos libres en la agenda
+6. Salir`
+);
 }
 
-mostrarMenu();
+function ejecutarOpcion(opcion) {
+switch (opcion) {
+  case '1': {
+    const nombre = prompt('Ingresa el nombre del contacto:');
+    const telefono = prompt('Ingresa el telefono del contacto:');
+    miAgenda.añadirContacto(new Contacto(nombre, telefono));
+    break;
+  }
+  case '2': {
+    const nombre = prompt('Ingresa el nombre del contacto a buscar:');
+    miAgenda.buscarContacto(nombre);
+    break;
+  }
+  case '3': {
+    const nombre = prompt('Ingresa el nombre del contacto a eliminar:');
+    const contacto = miAgenda.contactos.find((c) => c.nombre === nombre);
+    if (contacto) {
+      miAgenda.eliminarContacto(contacto);
+    } else {
+      console.log(`No se encontro un contacto con el nombre ${nombre}.`);
+    }
+    break;
+  }
+  case '4': {
+    miAgenda.listarContactos();
+    break;
+  }
+  case '5': {
+    miAgenda.huecosLibres();
+    break;
+  }
+  case '6': {
+    console.log('Saliendo del programa.');
+    return;
+  }
+  default: {
+    console.log('Esta opcion es invalida.');
+    break;
+  }
+}
+}
+
+// Bucle principal del que muestra el menu y ejecuta la opción seleccionada por el usuario
+let opcion;
+do {
+opcion = mostrarMenu();
+ejecutarOpcion(opcion);
+} while (opcion !== '6');
